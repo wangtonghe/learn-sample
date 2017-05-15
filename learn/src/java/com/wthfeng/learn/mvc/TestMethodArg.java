@@ -12,7 +12,7 @@ import java.util.Arrays;
  */
 public class TestMethodArg {
 
-    public void  method1(String name,String email){
+    public void  method1( String name,String email){
         System.out.println(name+":"+email);
 
     }
@@ -25,6 +25,7 @@ public class TestMethodArg {
             Parameter[] parameters = method.getParameters();
             Arrays.stream(parameters).forEach(p->{
                 System.out.println(p.getName()+" : "+p.getType());
+                System.out.println(p.getAnnotatedType());
             });
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
