@@ -55,7 +55,6 @@ public class TestCaller {
         System.out.println("获取结果：");
         executorService.shutdown();
 
-
         list.forEach(e-> {
             try {
                 e.get();
@@ -66,7 +65,6 @@ public class TestCaller {
             }
         });
         System.out.println("共耗时："+(System.currentTimeMillis()-start)/1000+"秒");
-
     }
 
     @Test
@@ -93,6 +91,34 @@ public class TestCaller {
         }
         executorService.shutdown();
         System.out.println("共耗时："+(System.currentTimeMillis()-start)+"毫秒");
+    }
+
+
+    @Test
+    public void test3(){
+
+        long start = System.currentTimeMillis();
+        CountDownLatch countDownLatch = new CountDownLatch(10);
+        for(int i=0;i<10;i++){
+            new Thread(()->{
+                long s1 = System.currentTimeMillis();
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("线程结束！"+(System.currentTimeMillis()-s1));
+                countDownLatch.countDown();
+
+            }).start();
+        }
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("共执行："+(System.currentTimeMillis()-start)+"毫秒");
+
     }
 
 
