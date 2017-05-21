@@ -65,4 +65,11 @@ public class LockTest {
         }
 
     }
+
+
+    public void test2(){
+        Lock lock = new ReentrantLock();
+
+        Lock lock2 = new ReentrantLock(true);
+    }
 }
