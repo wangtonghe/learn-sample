@@ -56,6 +56,7 @@ public class ConditionTest {
                 TimeUnit.SECONDS.sleep(2);
                 System.out.println("唤醒线程");
                 condition.signal();
+                System.out.println(Thread.currentThread().getName()+"继续执行");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -73,4 +74,5 @@ public class ConditionTest {
         }
 
     }
+
 }
