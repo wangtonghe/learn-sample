@@ -2,9 +2,11 @@ package com.wthfeng.learn.proxy;
 
 import org.junit.Test;
 
+import java.awt.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
 /**
  * @author wangtonghe
@@ -13,7 +15,7 @@ import java.lang.reflect.Proxy;
 public class TestProxy {
 
     @Test
-    public void testStatic(){
+    public void testStatic() {
         ImageHandler handler = new ImageHandlerImpl();
         ImageHandlerProxy proxy = new ImageHandlerProxy(handler);
 
@@ -22,19 +24,37 @@ public class TestProxy {
     }
 
     @Test
-    public void testDynamic(){
+    public void testDynamic() {
 
         //真实对象
         ImageHandler realObject = new ImageHandlerImpl();
 
         //代理对象的处理器
-        InvocationHandler  handler = new MyDynamicProxy(realObject);
+        InvocationHandler handler = new MyDynamicProxy(realObject);
 
         //生成代理对象
         ImageHandler imageProxy = (ImageHandler) Proxy.newProxyInstance(handler.getClass().getClassLoader(),
-                handler.getClass().getInterfaces(),handler);
+                new Class[]{ImageHandler.class}, handler);
 
         imageProxy.loadImage();
+
+    }
+
+    @Test
+    public void testInterface() {
+        //真实对象
+        ImageHandler realObject = new ImageHandlerImpl();
+
+        //代理对象的处理器
+        InvocationHandler handler = new MyDynamicProxy(realObject);
+
+        Arrays.stream(ImageHandler.class.getInterfaces()).forEach(System.out::println);
+
+        Arrays.stream(ImageHandlerImpl.class.getInterfaces()).forEach(System.out::println);
+
+        Arrays.stream(handler.getClass().getInterfaces()).forEach(System.out::println);
+
+
 
     }
 

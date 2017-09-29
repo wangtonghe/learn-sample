@@ -1,13 +1,8 @@
 package com.wthfeng.learn.classtest;
 
 
-import jdk.internal.org.objectweb.asm.*;
 import org.junit.Test;
 import org.objectweb.asm.*;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
 
 import java.io.IOException;
 
