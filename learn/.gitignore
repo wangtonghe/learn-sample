@@ -2,3 +2,4 @@
 /.idea
 learn.iml
 
+!/pom.xml

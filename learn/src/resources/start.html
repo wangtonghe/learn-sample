@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<div>
+    <input id="msg" type="text" placeholder="请输入消息"> <br>
+    <button id="btn"  >发送</button>
+    <div id="text">
+
+    </div>
+
+
+</div>
+<script>
+    $(function(){
+        $("#btn").on('click',function () {
+            var msg = $("#msg").value();
+            $("#msg").value('');
+            $.post('localhost',{msg:msg},function (data) {
+                $("#text").append(data);
+
+            });
+        });
+    })
+</script>
+
+
+
+</body>
+</html>
