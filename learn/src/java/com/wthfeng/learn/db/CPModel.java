@@ -1,7 +1,9 @@
 package com.wthfeng.learn.db;
 
+import java.util.ArrayDeque;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
@@ -18,17 +20,20 @@ public class CPModel {
 
     static final Condition condition = lock.newCondition();
 
+    static private int cap = 200;
+
+//    static final MyLinkedBlockingQueue<Task> queue = new MyLinkedBlockingQueue<>(cap);
 
     static final Queue<Task> queue = new LinkedList<>();
 
     static final AtomicInteger number = new AtomicInteger(0);
 
-    static int total =0;
+    static int total = 0;
 
     static volatile boolean flag = true;
 
 
-    static private int cap = 200;
+    static int threadNum = 20;
 
 
     public static void main(String[] args) throws Exception {
@@ -38,15 +43,13 @@ public class CPModel {
             number.getAndIncrement();
         }
 
-        Thread produce = new Thread(new Produce());
-
-        Thread consume = new Thread(new Consume());
-
-        consume.start();
-        produce.start();
-        Thread.sleep(30 * 1000);
+        for (int i = 0; i < threadNum; i++) {
+            new Thread(new Produce(), "produce-" + i).start();
+            new Thread(new Consume(), "consume-" + i).start();
+        }
+        Thread.sleep(60 * 1000);
         shundown();
-        System.out.println("共生产消费任务数："+total);
+        System.out.println("共生产消费任务数：" + total);
     }
 
     // 生产者线程
@@ -54,29 +57,27 @@ public class CPModel {
 
         @Override
         public void run() {
-            while (flag) {  //控制生产者停止标识，用于统计效率
-                lock.lock();  //加锁
-                try {
-                    while (queue.size() == cap) {  //若大于边界值则等待
-                        condition.await();
-                    }
-                    Task task = new Task(number.incrementAndGet());  //生产任务
-                    queue.offer(task);
-                    condition.signal();  //通知消费者已生产
-                    System.out.println("生产任务数：" + (number.get()-100));
-                    total++;
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-
-                } finally {
-                    lock.unlock();      //解锁
+            lock.lock();  //加锁
+            try {
+                while (queue.size() == cap) {  //若达到边界值则等待
+                    condition.await();
                 }
-                try {
-                    TimeUnit.MILLISECONDS.sleep(500);  //模拟生产流程，等待200毫秒生产一个
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Task task = new Task(number.incrementAndGet());  //生产任务
+                queue.add(task);
+                condition.signal();  //通知消费者已生产
+                System.out.println("生产任务数：" + (number.get() - 100));
+                total++;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            } finally {
+                lock.unlock();      //解锁
+            }
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);  //模拟生产流程，等待200毫秒生产一个
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -86,27 +87,25 @@ public class CPModel {
 
         @Override
         public void run() {
-            while (flag) {
-                lock.lock();  //加锁
-                try {
-                    while (queue.size() == 0) {  //若任务队列为空则等待
-                        condition.await();
-                    }
-                    Task task = queue.poll();   //取出任务消费
-                    System.out.println("消费任务数：" + task.no);
-                    condition.signal();  //通知生产者已取出
-                    total++;
-                } catch (Exception e) {
-                    e.printStackTrace();
+            lock.lock();  //加锁
+            try {
+                while (queue.size() == 0) {  //若任务队列为空则等待
+                    condition.await();
+                }
+                Task task = queue.poll();   //取出任务消费
+                System.out.println("模拟消费：" + task.no);
+                condition.signal();  //通知生产者已消费
+                total++;
+            } catch (Exception e) {
+                e.printStackTrace();
 
-                } finally {
-                    lock.unlock();
-                }
-                try {
-                    TimeUnit.MILLISECONDS.sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            } finally {
+                lock.unlock();
+            }
+            try {
+                TimeUnit.MILLISECONDS.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
