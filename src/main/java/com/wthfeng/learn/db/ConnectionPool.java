@@ -1,7 +1,6 @@
 package com.wthfeng.learn.db;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.testng.annotations.Test;
 
 import java.sql.Connection;
 import java.util.LinkedList;

@@ -1,7 +1,5 @@
 package com.wthfeng.learn.lang;
 
-import org.junit.Test;
-
 /**
  * @author wangtonghe
  * @date 2017/10/23 18:51

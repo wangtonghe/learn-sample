@@ -1,9 +1,5 @@
 package com.wthfeng.learn.lang;
 
-import org.testng.annotations.Test;
-
-import java.util.*;
-
 /**
  * @author wangtonghe
  * @date 2017/12/27 13:28
