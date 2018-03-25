@@ -24,9 +24,9 @@ public class IteratorTest {
             }
         }
         System.out.println(list);
-        List<Integer> list2 = List.of(45,67);
+//        List<Integer> list2 = List.of(45,67);
 
-        list.addAll(0,list2);
+//        list.addAll(0,list2);
         System.out.println(list);
 
 
