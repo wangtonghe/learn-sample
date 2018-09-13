@@ -22,12 +22,12 @@ public class NIOClient {
 
     private AtomicInteger sendMsg = new AtomicInteger(0);
 
-    public void strat() throws IOException {
+    public void start() throws IOException {
 
         selector = Selector.open();
         SocketChannel socketChannel = SocketChannel.open();
         socketChannel.configureBlocking(false);
-        socketChannel.connect(new InetSocketAddress(9999));
+        socketChannel.connect(new InetSocketAddress(8000));
         socketChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ);
         while (true) {
             try {
@@ -48,21 +48,21 @@ public class NIOClient {
                     } else if (key.isReadable()) {
                         SocketChannel sc = (SocketChannel) key.channel();
                         ByteBuffer byteBuffer = ByteBuffer.allocate(80);
-
-                        sc.read(byteBuffer); //从流中读取数据
+                        //从流中读取数据
+                        sc.read(byteBuffer);
 
                         byteBuffer.flip();
                         String msg = CharsetUtil.UTF_8.decode(byteBuffer).toString();
-                        System.out.println("从服务器接受消息为："+msg);
+                        System.out.println("从服务器接受消息为：" + msg);
 
                         Thread.sleep(100);
                         int count = sendMsg.getAndIncrement();
-                        if(count>10){
+                        if (count > 10) {
                             byteBuffer.clear();
                             sc.close();
                             return;
                         }
-                        String message = "send to "+String.valueOf(count);
+                        String message = "send to " + String.valueOf(count);
                         sc.write(ByteBuffer.wrap((message.getBytes())));
                         byteBuffer.clear();
                     }
@@ -78,7 +78,7 @@ public class NIOClient {
 
     public static void main(String[] args) throws IOException {
         NIOClient client = new NIOClient();
-        client.strat();
+        client.start();
 
     }
 }
