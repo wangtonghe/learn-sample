@@ -15,7 +15,7 @@ public class BlockServer {
     public static void main(String[] args) throws Exception {
 
         // 创建服务器端
-        ServerSocket server = new ServerSocket(8000);
+        ServerSocket server = new ServerSocket(7777);
         while (true) {
             // 在这阻塞，直到下一个请求到来
             try (Socket socket = server.accept()) {

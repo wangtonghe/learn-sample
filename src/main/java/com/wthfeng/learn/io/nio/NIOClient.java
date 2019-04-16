@@ -27,8 +27,8 @@ public class NIOClient {
         selector = Selector.open();
         SocketChannel socketChannel = SocketChannel.open();
         socketChannel.configureBlocking(false);
-        socketChannel.connect(new InetSocketAddress(8000));
-        socketChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ);
+        socketChannel.connect(new InetSocketAddress(9000));
+        socketChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         while (true) {
             try {
                 selector.select();  //阻塞，直到服务器可用
@@ -42,7 +42,7 @@ public class NIOClient {
                         if (sc.isConnectionPending()) {
                             sc.finishConnect();
                         }
-                        String hello = "Hello NIO !";
+                        String hello = "/user/login name=xxx&password=yyy\n";
                         ByteBuffer byteBuffer = ByteBuffer.wrap(hello.getBytes(CharsetUtil.UTF_8));
                         sc.write(byteBuffer);
                     } else if (key.isReadable()) {
@@ -52,6 +52,8 @@ public class NIOClient {
                         sc.read(byteBuffer);
 
                         byteBuffer.flip();
+                        int code = byteBuffer.getInt();
+                        System.out.println(code);
                         String msg = CharsetUtil.UTF_8.decode(byteBuffer).toString();
                         System.out.println("从服务器接受消息为：" + msg);
 
@@ -65,6 +67,12 @@ public class NIOClient {
                         String message = "send to " + String.valueOf(count);
                         sc.write(ByteBuffer.wrap((message.getBytes())));
                         byteBuffer.clear();
+                    } else if (key.isWritable()) {
+                        Thread.sleep(1000 * 10);
+                        SocketChannel channel = (SocketChannel) key.channel();
+                        String hello = "/room/search userId=10001&roomId=10001\n";
+                        ByteBuffer byteBuffer = ByteBuffer.wrap(hello.getBytes(CharsetUtil.UTF_8));
+                        channel.write(byteBuffer);
                     }
                 }
 

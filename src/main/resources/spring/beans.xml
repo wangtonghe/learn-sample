@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+>
+
+    <!--<import resource="classpath:spring/aop.xml"/>-->
+
+
+    <!--开启注解配置-->
+    <!--<context:annotation-config/>-->
+    <!--<context:component-scan base-package="com.wthfeng.learn.spring.aop"/>-->
+
+    <!--<aop:aspectj-autoproxy/>-->
+
+    <!--<bean id="startEvent" class="com.wthfeng.learn.spring.ApplicationStartEvent"/>-->
+
+
+    <!--<bean id="beanTemplate" abstract="true">-->
+    <!--<property name="msg1" value="xxx"/>-->
+    <!--<property name="msg2" value="ddd"/>-->
+    <!--<property name="msg3" value="yyy"/>-->
+    <!--</bean>-->
+
+
+    <!--延时加载，并指定了初始和销毁时的回调方法-->
+    <!--<bean id="helloService" class="com.wthfeng.learn.spring.HelloService" lazy-init="false">-->
+    <!--&lt;!&ndash;构造器传参，指定bean的依赖关系&ndash;&gt;-->
+    <!--<constructor-arg name="helloDao" ref="helloDao"/>-->
+    <!--<constructor-arg name="worldDao" ref="worldDao"/>-->
+    <!--&lt;!&ndash;属性传参，指定依赖关系&ndash;&gt;-->
+    <!--<property name="message" value="wthfeng"/>-->
+    <!--</bean>-->
+
+    <!--<bean name="helloDao" class="com.wthfeng.learn.spring.HelloDao"/>-->
+
+    <!--<bean id="postServiceBean" class="com.wthfeng.learn.spring.PostServiceBean"/>-->
+
+    <bean class="com.wthfeng.learn.spring.aop.EmailSaveAopProxy"/>
+
+    <bean id="emailService" class="com.wthfeng.learn.spring.aop.EmailService"/>
+
+
+
+    <!--需要有父类的属性-->
+    <!--<bean id="messageBean" class="com.wthfeng.learn.spring.MessageBean" parent="beanTemplate"/>-->
+
+
+    <!--<bean id="worldDao" class="com.wthfeng.learn.spring.WorldDao" init-method="init" destroy-method="destroy"/>-->
+
+
+    <!--<bean id="collectionBean" class="com.wthfeng.learn.spring.CollectionBean">-->
+    <!--<property name="list">-->
+    <!--<list>-->
+    <!--<value>aaa</value>-->
+    <!--<value>bbb</value>-->
+    <!--<value>ccc</value>-->
+    <!--</list>-->
+    <!--</property>-->
+    <!--<property name="map">-->
+    <!--<map>-->
+    <!--<entry key="aaa" value="34"/>-->
+    <!--<entry key="bbb" value="55"/>-->
+    <!--<entry key="ccc" value="23"/>-->
+    <!--</map>-->
+    <!--</property>-->
+    <!--</bean>-->
+
+
+</beans>

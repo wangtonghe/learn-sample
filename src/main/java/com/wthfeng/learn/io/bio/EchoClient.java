@@ -13,7 +13,7 @@ public class EchoClient {
 
     public static void main(String[] args) throws Exception {
 
-        Socket socket = new Socket("127.0.0.1", 8080);
+        Socket socket = new Socket("127.0.0.1", 8000);
         OutputStream outputStream = socket.getOutputStream();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
         writer.write("hello\n");

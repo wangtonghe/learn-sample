@@ -1,0 +1,252 @@
+syntax = "proto2";
+
+option java_package = "com.yueke.taurus.ssp.service.integrate.yincheng.api";
+option java_outer_classname = "YinChengProto";
+
+// 版本号信息
+message Version {
+  optional uint32 major = 1[default = 0]; // 主版本号
+  optional uint32 minor = 2[default = 0]; //
+  optional uint32 micro = 3[default = 0]; //
+};
+
+// 应用信息
+message App {
+  required Version app_version = 1;  // 建议填写！应用版本
+  required string app_key = 2;//appKey
+  required string app_package_name = 3;//必填！app包名
+};
+
+// 唯一用户标识，必需使用明文，必需按要求填写
+message UdId {
+  //ios必须要有idfa，Android设备必须要有imei或者imei_md5
+  optional string idfa = 1[default = ""];  // iOS设备的IDFA，格式要求[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}
+  optional string imei = 2[default = ""];  // Android手机设备的IMEI，格式要求[0-9a-fA-F]{14,15}
+  optional string mac = 3[default = ""];  // Android非手机设备的WiFi网卡MAC地址，格式要求[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}
+  optional string imei_md5 = 4[default = ""]; // Android手机设备的IMEI，经过MD5加密，格式要求[0-9A-Za-z]{32}
+  optional string android_id = 5[default = ""]; //建议填写！Android手机设备系统ID，格式要求[0-9A-Za-z]{16}
+  optional string advertising_id = 6; //建议填写！android:google android advertising id ,ios: for advertising id
+};
+
+// 二维尺寸信息（一般用size，如果是object-c的话就使用YcSize）
+message Size {
+  optional uint32 width = 1[default = 0];  // 必须填写！宽度
+  optional uint32 height = 2[default = 0];  // 必须填写！高度
+};
+
+//由于object-c 已经有Size这个类，所以object-c只能用这个
+message YcSize {
+  optional uint32 width = 1[default = 0];  // 必须填写！宽度
+  optional uint32 height = 2[default = 0];  // 必须填写！高度
+};
+
+// 设备信息
+message Device {
+  // 设备类型
+  enum DeviceType {
+    PHONE = 1;  // 手机，含iTouch
+    TABLET = 2;  // 平板
+  };
+  // 操作系统类型
+  enum OsType {
+    ANDROID = 1;  // Android
+    IOS = 2;  // iOS
+  };
+  optional DeviceType device_type = 1;  // 必填！设备类型
+  optional OsType os_type = 2;  // 必填！操作系统类型
+  optional Version os_version = 3;  // 建议填写！操作系统版本
+  optional bytes vendor = 4[default = ""];  // 必填！设备厂商名称，中文需要UTF-8编码
+  optional bytes model = 5[default = ""];  // 必填！设备型号，中文需要UTF-8编码
+  optional UdId udid = 6;  // 建议填写！唯一设备标识，必需按要求填写
+  optional Size screen_size = 7; // 设备屏幕宽高,屏幕尺寸最终选择7或者8
+  optional YcSize yc_screen_size = 8; // 设备屏幕宽高,屏幕尺寸最终选择7或者8
+  // 屏幕方向
+  enum Orientation {
+    LAND = 1;  // 横屏
+    PORT = 2;  // 竖屏
+  };
+  optional Orientation device_orientation = 10;  // 设备方向
+};
+
+// WiFi热点信息
+message WiFiAp {
+  optional string ap_mac = 1;  // 建议填写！热点MAC地址，格式要求[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}
+  optional int32 rssi = 2;  // 建议填写！热点信号强度，通常是负数
+  optional bytes ap_name = 3;  // 建议填写！热点名称，可不传递，建议传递当前接入热点的名称，用于判断用户当前所处场所，中文需要UTF-8编码
+  optional bool is_connected = 4;  // 建议填写！是否是当前连接热点，配合热点名称可用于识别用户所处场所
+};
+
+// 网络环境信息
+message Network {
+  // 网络连接类型
+  enum ConnectionType {
+    CONNCTION_UNKNOWN = 0; // 无法探测当前网络状态
+    CELL_UNKNOWN = 1; // 蜂窝数据接入，未知网络类型
+    CELL_2G = 2; // 蜂窝数据2G网络
+    CELL_3G = 3; // 蜂窝数据3G网络
+    CELL_4G = 4; // 蜂窝数据4G网络
+    CELL_5G = 5; // 蜂窝数据5G网络
+    WIFI = 100; // Wi-Fi网络接入
+    ETHERNET = 101; // 以太网接入
+    NEW_TYPE = 999;  // 未知新类型
+  };
+  // 移动运营商类型
+  enum OperatorType {
+    UNKNOWN_OPERATOR = 0; // 未知的运营商
+    CHINA_MOBILE = 1; // 中国移动
+    CHINA_TELECOM = 2; // 中国电信
+    CHINA_UNICOM = 3; // 中国联通
+    OTHER_OPERATOR = 99; // 其他运营商
+  };
+  optional ConnectionType connection_type = 2;  // 必填！网络连接类型，用于判断网速
+  optional OperatorType operator_type = 3;  // 必填！移动运营商类型，用于运营商定向广告
+  optional string cellular_id = 4;  // 选填！当前连接的运营商基站ID，用于快速用户定位
+  repeated WiFiAp wifi_aps = 5;  // 选填！周边WiFi热点列表，用于精细用户定位
+};
+
+// GPS信息
+message Gps {
+  // GPS坐标类型
+  enum CoordinateType {
+    WGS84 = 1;  // 全球卫星定位系统坐标系
+    GCJ02 = 2;  // 国家测绘局坐标系(火星坐标系)
+    BD09 = 3;  // 百度坐标系
+  };
+  optional CoordinateType coordinate_type = 1;  // 必填！坐标类型
+  optional double longitude = 2;  // 必填！经度
+  optional double latitude = 3;  // 必填！纬度
+  optional uint32 timestamp = 4;  // 建议填写！时间戳，单位秒
+};
+
+//人的属性数据,建议填写！如果能获取到，必须填写
+//Demographic data provided by the publisher.
+message UserDemographic {
+  enum Gender {
+    UNKNOWN = 0;// 性别未知
+    MALE = 1;// 男
+    FEMALE = 2;// 女
+  }
+  // Gender
+  optional Gender gender = 1 [default = UNKNOWN];
+  // Age interval
+  optional int32 age_low = 2 [default = 0];
+  optional int32 age_high = 3 [default = 999];
+
+  // 学历
+  enum Education{
+    EDU_UNKNOWN = 0;  // 学历未知
+    EDU_DOCTOR = 1;  // 博士
+    EDU_MASTER = 2;  // 硕士
+    EDU_COLLEGE = 3;  // 大学生
+    EDU_HIGH_SCHOOL = 4;  // 高中
+    EDU_MIDDLE_SCHOOL = 5;  // 初中
+    EDU_PRIMARY_SCHOOL = 6;  // 小学
+  }
+  optional Education education = 4 [default = EDU_UNKNOWN];
+};
+
+//Mobads API请求
+message MobadsRequest {
+  optional string adspacekey = 2;  // 广告位ID
+  optional Version sdk_version = 3;  // dsk版本号,主要用于记录日志，方便以后统计
+  required App app = 4;  // 建议填写！应用信息
+  optional Device device = 5;  // 建议填写！设备信息
+  optional Network network = 6;  // 建议填写！网络环境信息
+  optional Gps gps = 7;  // GPS定位信息，用于辅助触发LBS广告
+  optional string client_ip = 8;  // 客户端ip,必填,不填写将无广告返回
+  required string db_name = 9;//dbname,目前只对api开放bc，所以必须填bc
+
+  repeated uint32 no_ad_default_ids = 10;//没有默认广告的id列表(仅供内部sdk使用)
+
+  //不需要默认,打底广告标识，没有该字段或者该字段为0标识可以出默认广告，为1表示不需要默认广告
+  //api对接请将该字段设置为1
+  optional int32 no_default_ads = 11;
+
+  //信息流广告是sdk渲染还是adx渲染,没有该字段或者为0的时候表示adx渲染,为1表示sdk渲染,用于信息流广告的时候
+  //非信息流广告是否需要加上点击宏(%%CURL%%),可以由sdk加上自己的点击,有该字段，并且为1，表示需要点击宏
+  optional int32 feeds_sdk_render = 12;
+
+  optional UserDemographic user_demographic = 13;
+
+  //期望返回的广告个数,默认值为1,不填为1,建议最多3个,最终返回广告个数和服务端配置以及服务端返回的广告个数有关
+  //没有返回多个广告需求的媒体不需要填写该字段(需要返回多个广告的媒体需申请,申请通过才能返回多个)
+  optional int32 expect_response_num = 15;
+
+  //部分流量创意中的网络访问要求使用https协议，包含但不限于素材、点击、曝光监测、点击监测
+  optional bool https_required = 18 [default = false];
+};
+
+//信息流广告可以选择sdk渲染或者adx渲染，由sdk渲染时使用该结构
+message Creative {
+  // 资源地址，资源地址，如图片，视频(mp4)，音频(mp3)
+  optional string source_url = 1;//请使用source_urls，该字段即将废弃
+  repeated string source_urls = 2;
+
+  //点击到落地页
+  optional string click_url = 3;
+  //点击监测
+  repeated string click_track_url = 4;
+  //显示监测
+  repeated string impression_url = 5;
+
+  //如果点击地址是下载app这个字段需要设置为1,如果是点击到落地页，不需要填写该字段，或者为0
+  optional int32 click_type = 6;
+
+  // 图片尺寸
+  //图片宽度
+  optional uint32  width = 7;
+  //图片高度
+  optional uint32  height = 8;
+  // 创意标题
+  // utf-8编码，编码后长度不超过50个字符
+  optional string title = 9;
+  // 创意描述
+  // utf-8编码，编码后长度不超过100个字符
+  optional string ad_text = 10;
+
+  //创意id
+  optional int64 creative_id = 12;
+
+  //app下载完成反馈地址
+  repeated string download_complete = 15;
+
+  //返回的logo地址
+  optional string ad_logo_url = 16;
+  //logo宽
+  optional uint32 ad_logo_w = 17;
+  //logo高
+  optional uint32 ad_logo_h = 18;
+
+  //下载的app包名，仅下载时会有该字段（部分媒体下载时可能需要该字段）
+  optional string app_package_name = 20;
+
+  //下载的app名称，仅下载时会有该字段（部分媒体下载时可能需要该字段）
+  optional string app_name = 22;
+}
+
+// 广告信息
+message Ad {
+  optional string ad_spacekey = 1;  // 对应请求时填写的广告位ID
+  optional bytes html_snippet = 2;  // HTML片段，在MSSP设置广告位返回模板时使用此字段，中文需要UTF-8编码(视频和音频不需要该字段)
+  optional Creative creative_info = 3;  //创意信息(视频和音频)，视频和音频由sdk渲染
+  optional string advertiser_logo = 5;//新广告法需要广告logo,填写广告主logo
+};
+
+//Mobads API应答
+message MobadsResponse {
+  optional uint64 error_code = 2;  // 请求响应出错时的错误码，用于问题排查,0表示有广告，其他表示错误类型
+  repeated Ad ads = 3;  // 应答广告清单，一次请求可以返回多个广告，需要逐个解析
+  optional int64 expiration_time = 4;  // 广告清单过期时间戳，单位秒
+  optional uint32 impression_time = 5;  // 物料曝光时长，计时曝光类广告位使用，仅用于设置开屏广告，需大于0小于10秒
+  optional uint32 width = 6;  // 广告位宽度
+  optional uint32 height = 7;  // 广告位高度
+  optional uint32 adtype = 8;//广告类型（1、横幅广告，2、插屏广告，3、开屏广告，4、信息流广告，5、视频，6、音频）
+  //信息流广告类型
+  //1：文字，2：缩略图文（图片在左，标题和文字在右，图片尺寸不同媒体要求不同），3：图文，一图一文（图片尺寸不同媒体要求不同），4：两行文字(一行标题，一行描述)
+  //5：单图，图片在右，标题在左，title不超过24个字符，6：3图加标题，title不超过24个字符，7：大图，一图一文，title不超过24个字符
+  //8：单图缩略图文（和2渲染方式不一样，图片在右，标题和文字在左）,9：单图缩略图文（和5渲染方式不一样，图片在左，标题在右）
+  optional uint32 feeds_adtype = 10;
+  optional uint32 default_code_id = 12;//返回的移动默认广告id,如果是0表示是打底广告(免费的)，由sdk选择出或者不出该广告
+  optional string default_code = 13; //移动默认广告信息,请求其他移动sdk时需要(仅供内部sdk使用)
+  optional uint32 is_third_ad = 15;//没有该值或者0表示非聚合广告，为1表示聚合广告(仅供内部sdk使用)
+};

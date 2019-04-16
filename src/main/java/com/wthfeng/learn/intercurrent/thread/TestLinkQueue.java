@@ -24,9 +24,9 @@ public class TestLinkQueue<E> {
     }
 
 //    public boolean put(E item){
-//        Node<E> node = new Node<>(item,null);
+//        TreeNode<E> node = new TreeNode<>(item,null);
 //        while(true){
-//            Node<E> curTail = tail.get();
+//            TreeNode<E> curTail = tail.get();
 //            curTail.next
 //        }
 //

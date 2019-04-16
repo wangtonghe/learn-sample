@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
+>
+
+
+    <!--spring只支持方法连接点-->
+    <!--aop配置元素，aop配置都需在其内部-->
+    <aop:config>
+
+        <!--定义切点, 定义了在哪里操作-->
+        <aop:pointcut id="allService" expression="execution(* com.wthfeng.learn.spring.aop.*.save(..))"/>
+
+        <!--切面定义，一个切面包括了AOP的所有增强定义，包括切点和通知
+        -->
+        <aop:aspect id="logAspect" ref="logBean">
+
+            <!--通知定义了增强什么和什么时增强-->
+            <!--通知,包括前置、后置、返回、抛出异常，环绕通知等-->
+            <aop:before method="before" pointcut-ref="allService"/>
+            <aop:after method="after" pointcut-ref="allService"/>
+            <aop:around method="around" pointcut-ref="allService"/>
+        </aop:aspect>
+
+    </aop:config>
+
+    <bean id="logBean" class="com.wthfeng.learn.spring.AopServiceBean"/>
+
+    <!--<bean class="com.wthfeng.learn.spring.aop.EmailService" id="emailService"/>-->
+    <bean class="com.wthfeng.learn.spring.aop.Email2Service" id="emailService2"/>
+    <bean class="com.wthfeng.learn.spring.aop.Email3Service" id="emailService3"/>
+
+
+</beans>

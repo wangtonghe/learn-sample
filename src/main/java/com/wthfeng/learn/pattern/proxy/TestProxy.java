@@ -3,6 +3,7 @@ package com.wthfeng.learn.pattern.proxy;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
@@ -52,6 +53,25 @@ public class TestProxy {
 
         Arrays.stream(handler.getClass().getInterfaces()).forEach(System.out::println);
 
+
+    }
+
+    @Test
+    public void testDynamic2() {
+
+        ImageHandler imageHandler = new ImageHandlerImpl();
+
+        ImageHandler imageProxy = (ImageHandler) Proxy.newProxyInstance(imageHandler.getClass().getClassLoader(),
+                new Class[]{ImageHandler.class}, (proxy, method, args) -> {
+
+                    System.out.println("开始执行");
+
+                    return method.invoke(imageHandler, args);
+
+
+                });
+
+        imageProxy.loadImage();
 
 
     }

@@ -28,15 +28,18 @@ public class NioHttpServer {
 
         AtomicInteger totalNum = new AtomicInteger(0);
 
-        Path path = Paths.get("/Users/wangtonghe/Desktop/baidu.html");
+        Path path = Paths.get("/Users/wangtonghe/local/tmp/baidu.html");
         byte[] data = Files.readAllBytes(path);
         String contentType = "text/html";
-        String header = "HTTP/1.1 200 OK\n" +
-                "Server: OneFile 2.0\n" +
-                "Content-length: " + data.length + "\r\n" +
-                "Content-type: " + contentType + ",charset=" + encoding + "\r\n\r\n";
-        String content = "<html><head><title>百度</title></head><body>Hello Baidu !</body></html>";
-
+        // http的响应header
+        String header =
+                // 状态行
+                "HTTP/1.1 200 OK\n" +
+                        "Server: OneFile 2.0\n" +
+                        "Content-length: " + data.length + "\r\n" +
+                        "Content-type: " + contentType + ",charset=" + encoding
+                        // 空行
+                        + "\r\n\r\n";
         // 创建 ServerSocketChannel
         ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
         // 设置非阻塞模式
@@ -83,17 +86,18 @@ public class NioHttpServer {
                     SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
                     ByteBuffer dataBuf = ByteBuffer.wrap(data);
                     ByteBuffer headerBuf = ByteBuffer.wrap(header.getBytes());
+                    //
                     dataBuf.rewind();
                     headerBuf.rewind();
+                    // 向客户端写http的header
                     socketChannel.write(headerBuf);
+                    // 向客户端写http的响应正文
                     socketChannel.write(dataBuf);
+                    // 处理完后关闭连接
                     socketChannel.close();
-//                    socketChannel.write(dataBuf);
                 }
 
             }
         }
-
-
     }
 }
